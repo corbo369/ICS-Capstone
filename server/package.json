@@ -6,6 +6,7 @@
   "scripts": {
     "start": "LOG_LEVEL=http node ./bin/www",
     "dev": "nodemon ./bin/www",
+    "build": "rm -rf public && cd ../portfolio && npm run build && cp -r build ../portfolio/public",
     "lint": "npx eslint --fix .",
     "format": "npx prettier . --write"
   },
@@ -13,6 +14,7 @@
     "@dotenvx/dotenvx": "^1.39.0",
     "compression": "^1.8.0",
     "cookie-parser": "~1.4.7",
+    "cors": "^2.8.5",
     "express": "~4.21.2",
     "helmet": "^8.1.0",
     "morgan": "~1.10.0",

@@ -17,7 +17,7 @@ const useHoldings = () => {
             const updatedHoldings = await Promise.all(
                 holdingsArray.map(async (holding) => {
                     try {
-                        const response = await fetch(`http://localhost:5173/api/dexscreener/${holding.chainId}/${holding.address}`);
+                        const response = await fetch(`/api/dexscreener/${holding.chainId}/${holding.address}`);
                         const data: DexscreenerResponse = await response.json();
                         console.log(`Fetched price for ${holding.name}:`, data[0].priceUsd);
 
