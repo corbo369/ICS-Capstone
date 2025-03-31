@@ -5,11 +5,11 @@ import useDexscreenerData from "../hooks/useDexscreenerData";
 const chains = ["ethereum", "solana", "base", "hyperliquid"];
 
 interface AddTransactionProps {
-    addDexTransaction: (transaction: any) => void;
+    addTransaction: (transaction: any) => void;
     setActiveTab: (tab: "holdings" | "txns" | "addTxn") => void;
 }
 
-const AddTransaction: React.FC<AddTransactionProps> = ({ addDexTransaction, setActiveTab }) => {
+const AddTransaction: React.FC<AddTransactionProps> = ({ addTransaction, setActiveTab }) => {
     const [txnType, setTxnType] = useState<boolean>(true);
     const [contractAddress, setContractAddress] = useState<string>("");
     const [selectedAsset, setSelectedAsset] = useState<string>("");
@@ -58,7 +58,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ addDexTransaction, setA
                     const amount = parseFloat(formData.get("amount") as string);
                     const price = parseFloat(formData.get("price") as string);
 
-                    addDexTransaction({
+                    addTransaction({
                         name: tokenResults[0].name,
                         symbol: tokenResults[0].symbol,
                         chainId: tokenResults[0].chainId,

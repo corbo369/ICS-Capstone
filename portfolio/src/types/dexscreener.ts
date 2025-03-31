@@ -4,7 +4,6 @@ interface TokenInfo {
     symbol: string;
 }
 
-// ✅ Transaction Data for Different Time Frames
 interface TxnData {
     buys: number;
     sells: number;
@@ -17,7 +16,6 @@ interface TxnHistory {
     h24: TxnData;
 }
 
-// ✅ Volume and Price Change Data
 interface VolumeData {
     h24: number;
     h6: number;
@@ -32,7 +30,6 @@ interface PriceChangeData {
     h24: number;
 }
 
-// ✅ Social & Website Information
 interface WebsiteLink {
     label: string;
     url: string;
@@ -51,7 +48,6 @@ interface InfoData {
     socials: SocialLink[];
 }
 
-// ✅ Main API Data Structure
 export interface PairData {
     chainId: string;
     dexId: string;
@@ -70,5 +66,4 @@ export interface PairData {
     info: InfoData;
 }
 
-// ✅ Define the API Response Format
 export type DexscreenerResponse = PairData[];

@@ -16,7 +16,7 @@ const Holdings: React.FC<HoldingsProps> = ({dexHoldings}) => {
                     <p className="w-1/3 font-medium text-center">{holding.name}</p>
                     <p className="w-1/5 text-m text-gray-500 text-center">{holding.amount} {holding.symbol}</p>
                     <p className="w-1/5 text-m text-gray-500 text-center">
-                        ${holding.price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        ${Number(holding.price.toPrecision(5)).toLocaleString()}
                     </p>
                     <p className="w-1/5 font-medium text-right">
                         ${(holding.amount * holding.price).toLocaleString(undefined, { maximumFractionDigits: 2 })}

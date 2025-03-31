@@ -1,6 +1,6 @@
 import React from "react";
 
-import useHoldings from "./hooks/useHoldings";
+import useDatabase from "./hooks/useDatabase.ts";
 
 import Navbar from "./components/Navbar";
 import MainMenu from "./components/MainMenu";
@@ -21,21 +21,21 @@ import "./App.css";
 
 const App: React.FC = () => {
 
-    const {dexHoldings, dexTransactions, addDexTransaction, totalValue} = useHoldings();
+    const {dexHoldings, transactions, addTransaction, totalValue} = useDatabase(1);
 
     return (
       <div className="h-screen w-screen">
           <Navbar />
           <main className="pt-16 h-full w-full flex bg-gray-100">
-              <div className="w-1/2 h-full p-4">
+              <div className="w-3/5 h-full p-4">
                   <MainMenu
                       dexHoldings={dexHoldings}
-                      dexTransactions={dexTransactions}
-                      addDexTransaction={addDexTransaction}
+                      transactions={transactions}
+                      addTransaction={addTransaction}
                       totalValue={totalValue}
                   />
               </div>
-              <div className="w-1/2 flex flex-col">
+              <div className="w-2/5 flex flex-col">
                   <div className="h-1/2 p-4 flex items-center justify-center">
                       <Chart dexHoldings={dexHoldings} />
                   </div>

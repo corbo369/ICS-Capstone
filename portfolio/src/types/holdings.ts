@@ -16,12 +16,16 @@ export interface DexHolding {
     price: number;
 }
 
-export interface DexTransaction {
-    name: string; // Remove with SQL integration
-    symbol: string; // Remove with SQL integration (ADD TIMESTAMP FOR SORTING)
-    chainId: string;
-    address: string;
-    amount: number;
-    price: number;
-    type: boolean;
+export interface Transaction {
+    TransactionID: number;
+    UserID: number;
+    AssetID: number;
+    Amount: number;
+    Price: number;
+    Type: boolean;
+    Date: string;
+    Asset?: {
+        Name: string;
+        Symbol: string;
+    };
 }

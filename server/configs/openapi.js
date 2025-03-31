@@ -32,7 +32,7 @@ const options = {
             },
         ],
     },
-    apis: ["./routes/*.js", "./models/*.js"],
+    apis: ["./routes/*.js", "./models/*.js", "./routes/api/v1/*.js"],
 };
 
 export default swaggerJSDoc(options);

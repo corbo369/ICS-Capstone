@@ -11,6 +11,7 @@ const now = new Date().toISOString().slice(0, 23).replace("T", " ") + " +00:00";
 // Array of objects to add to the database
 const transactions = [
   {
+    TransactionID: 1,
     UserID: 1,
     AssetID: 1,
     Amount: 120.27,

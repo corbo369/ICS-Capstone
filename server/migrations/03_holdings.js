@@ -15,15 +15,26 @@ import { Sequelize } from "sequelize";
  */
 export async function up({ context: queryInterface }) {
   await queryInterface.createTable("Holdings", {
+    HoldingID: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     UserID: {
       type: Sequelize.INTEGER,
-      foreignKey: true,
       allowNull: false,
+      references: {
+        model: "Users",
+        key: "UserID",
+      },
     },
     AssetID: {
       type: Sequelize.INTEGER,
-      foreignKey: true,
       allowNull: false,
+      references: {
+        model: "Assets",
+        key: "AssetID",
+      },
     },
     Amount: {
       type: Sequelize.DECIMAL,

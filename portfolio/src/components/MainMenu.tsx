@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { DexHolding, DexTransaction } from "../types/holdings";
+import { DexHolding, Transaction } from "../types/holdings";
 
 import Holdings from "./Holdings";
 import Transactions from "./Transactions";
@@ -8,12 +8,12 @@ import AddTransaction from "./AddTransaction";
 
 interface MainMenuProps {
     dexHoldings: DexHolding[];
-    dexTransactions: DexTransaction[];
-    addDexTransaction: (transaction: any) => void;
+    transactions: Transaction[];
+    addTransaction: (transaction: any) => void;
     totalValue: () => number;
 }
 
-const MainMenu: React.FC<MainMenuProps> = ({ dexHoldings, dexTransactions, addDexTransaction, totalValue }) => {
+const MainMenu: React.FC<MainMenuProps> = ({ dexHoldings, transactions, addTransaction, totalValue }) => {
 
     const [activeTab, setActiveTab] = useState<"holdings" | "txns" | "addTxn">("holdings");
 
@@ -22,11 +22,11 @@ const MainMenu: React.FC<MainMenuProps> = ({ dexHoldings, dexTransactions, addDe
             <Holdings dexHoldings={dexHoldings} />
         ),
         txns: (
-            <Transactions dexTransactions={dexTransactions} />
+            <Transactions transactions={transactions} />
         ),
         addTxn: (
             <div className="h-full px-30 py-6">
-                <AddTransaction addDexTransaction={addDexTransaction} setActiveTab={setActiveTab} />
+                <AddTransaction addTransaction={addTransaction} setActiveTab={setActiveTab} />
             </div>
         )
     }

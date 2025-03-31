@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 import { DexscreenerResponse } from "../types/dexscreener.ts";
-import { DexHolding, DexTransaction } from "../types/holdings.ts";
+import { DexHolding, Transaction } from "../types/holdings.ts";
 
-const useHoldings = () => {
+const useDatabase = (userId: number) => {
     const [dexHoldings, setDexHoldings] = useState<DexHolding[]>([]);
-    const [dexTransactions, setDexTransactions] = useState<DexTransaction[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
 
     useEffect(() => {
         const fetchPrices = async () => {
@@ -40,16 +40,40 @@ const useHoldings = () => {
     }, []);
 
     useEffect(() => {
-        const storedTransactions = localStorage.getItem("transactions");
-        if (storedTransactions) {
-            setDexTransactions(JSON.parse(storedTransactions));
+        const fetchTransactions = async () => {
+            try {
+                const response = await fetch(`/api/v1/users/${userId}/transactions`);
+                const data = await response.json();
+                console.log(data);
+                setTransactions(data);
+            } catch (error) {
+                console.error("Error fetching transactions", error);
+            }
         }
+
+        fetchTransactions();
     }, []);
 
-    const addDexTransaction = (transaction: DexTransaction) => {
-        const updatedDexTransactions = [...dexTransactions, transaction];
-        setDexTransactions(updatedDexTransactions);
-        localStorage.setItem("transactions", JSON.stringify(updatedDexTransactions));
+    const addTransaction = async (transaction: Omit<Transaction, "TransactionID">) => {
+        try {
+            const res = await fetch(`/api/v1/users/${userId}/transactions`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(transaction),
+            });
+
+            const newTransaction = await res.json();
+            setTransactions((prev) => [newTransaction, ...prev]);
+        } catch (error) {
+            console.error("Failed to add transaction:", error);
+        }
+    };
+
+    /*
+    const addDexTransaction = (transaction: Transaction) => {
+        const updatedTransactions = [...transactions, transaction];
+        setTransactions(updatedTransactions);
+        localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
 
         let updatedHoldings = [...dexHoldings];
 
@@ -78,6 +102,7 @@ const useHoldings = () => {
         setDexHoldings(updatedHoldings);
         localStorage.setItem("holdings", JSON.stringify(updatedHoldings));
     }
+    */
 
     const totalValue = () => {
         let sum = 0;
@@ -87,7 +112,7 @@ const useHoldings = () => {
         return sum;
     }
 
-    return { dexHoldings, dexTransactions, addDexTransaction, totalValue };
+    return { dexHoldings, transactions, addTransaction, totalValue };
 };
 
-export default useHoldings;
+export default useDatabase;

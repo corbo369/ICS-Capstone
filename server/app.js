@@ -24,6 +24,9 @@ import openapi from "./configs/openapi.js";
 // Import middlewares
 import requestLogger from "./middlewares/request-logger.js";
 
+// Import routers
+import apiRouter from "./routes/api.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -32,10 +35,9 @@ const app = express();
 
 // Use libraries
 app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true,
+  origin: '*',
 }));
-app.use(helmet());
+//app.use(helmet());
 app.use(compression());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -46,6 +48,9 @@ app.use(requestLogger);
 
 // Use static files
 app.use(express.static(path.resolve(__dirname, '../portfolio/dist')));
+
+// Use routers
+app.use("/api", apiRouter);
 
 app.get("/api/dexscreener/:chainId/:tokenAddresses", async (req, res) => {
   const { chainId, tokenAddresses } = req.params;

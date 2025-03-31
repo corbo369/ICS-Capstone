@@ -8,6 +8,7 @@
 // Array of objects to add to the database
 const holdings = [
   {
+    HoldingID: 1,
     UserID: 1,
     AssetID: 1,
     Amount: 120.27,
