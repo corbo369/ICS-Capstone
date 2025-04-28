@@ -50,6 +50,7 @@ const HoldingSchema = {
   UserID: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    foreignKey: true,
     references: {
       model: "Users",
       key: "UserID",
@@ -58,6 +59,7 @@ const HoldingSchema = {
   AssetID: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    foreignKey: true,
     references: {
       model: "Assets",
       key: "AssetID",

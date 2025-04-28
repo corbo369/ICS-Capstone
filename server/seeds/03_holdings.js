@@ -9,10 +9,21 @@
 const holdings = [
   {
     HoldingID: 1,
-    UserID: 1,
+    UserID: 2,
     AssetID: 1,
-    Amount: 120.27,
-    AveragePrice: 14.2,
+    Amount: 0.273,
+  },
+  {
+    HoldingID: 2,
+    UserID: 2,
+    AssetID: 2,
+    Amount: 900,
+  },
+  {
+    HoldingID: 3,
+    UserID: 2,
+    AssetID: 3,
+    Amount: 7500,
   },
 ];
 

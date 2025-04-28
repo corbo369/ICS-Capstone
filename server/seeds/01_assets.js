@@ -7,13 +7,27 @@
 
 // Array of objects to add to the database
 const assets = [
-    {
-        AssetID: 1,
-        ChainID: "hyperliquid",
-        ContractAddress: "0x0d01dc56dcaaca66ad901c959b4011ec",
-        Name: "Hyperliquid",
-        Symbol: "HYPE",
-    },
+  {
+    AssetID: 1,
+    ChainID: "solana",
+    ContractAddress: "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh",
+    Name: "Wrapped BTC (Wormhole)",
+    Symbol: "WBTC",
+  },
+  {
+    AssetID: 2,
+    ChainID: "hyperliquid",
+    ContractAddress: "0x0d01dc56dcaaca66ad901c959b4011ec",
+    Name: "Hyperliquid",
+    Symbol: "HYPE",
+  },
+  {
+    AssetID: 3,
+    ChainID: "solana",
+    ContractAddress: "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    Name: "Fartcoin",
+    Symbol: "Fartcoin",
+  },
 ];
 
 /**
@@ -22,7 +36,7 @@ const assets = [
  * @param {queryInterface} context the database context to use
  */
 export async function up({ context: queryInterface }) {
-    await queryInterface.bulkInsert("Assets", assets);
+  await queryInterface.bulkInsert("Assets", assets);
 }
 
 /**
@@ -31,5 +45,5 @@ export async function up({ context: queryInterface }) {
  * @param {queryInterface} context the database context to use
  */
 export async function down({ context: queryInterface }) {
-    await queryInterface.bulkDelete("Assets", {}, { truncate: true });
+  await queryInterface.bulkDelete("Assets", {}, { truncate: true });
 }

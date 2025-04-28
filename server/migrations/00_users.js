@@ -14,18 +14,18 @@ import { Sequelize } from "sequelize";
  * @param {queryInterface} context the database context to use
  */
 export async function up({ context: queryInterface }) {
-    await queryInterface.createTable("Users", {
-        UserID: {
-            type: Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-        },
-        UserAddress: {
-            type: Sequelize.STRING,
-            unique: true,
-            allowNull: false,
-        },
-    });
+  await queryInterface.createTable("Users", {
+    UserID: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    UserAddress: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: false,
+    },
+  });
 }
 
 /**
@@ -34,5 +34,5 @@ export async function up({ context: queryInterface }) {
  * @param {queryInterface} context the database context to use
  */
 export async function down({ context: queryInterface }) {
-    await queryInterface.dropTable("Users");
+  await queryInterface.dropTable("Users");
 }

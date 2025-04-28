@@ -12,16 +12,18 @@
 // Import libraries
 import express from "express";
 
+// Import middleware
+import tokenMiddleware from "../middlewares/token.js";
+
 // Import v1 routers
 import usersRouter from "./api/v1/users.js";
-import transactionsRouter from "./api/v1/transactions.js"
+import assetsRouter from "./api/v1/assets.js";
+import transactionsRouter from "./api/v1/transactions.js";
+import holdingsRouter from "./api/v1/holdings.js";
+import logger from "../configs/logger.js";
 
 // Create Express router
 const router = express.Router();
-
-// Use v1 routers
-router.use("/v1/users", usersRouter);
-router.use("/v1/transactions", transactionsRouter);
 
 /**
  * Gets the list of API versions
@@ -53,13 +55,40 @@ router.use("/v1/transactions", transactionsRouter);
  *               - version: "1.0"
  *                 url: /api/v1/
  */
-router.get('/', function (req, res, next) {
+router.get("/", function (req, res, next) {
   res.json([
     {
       version: "1.0",
-      url: "/api/v1/"
-    }
-  ])
-})
+      url: "/api/v1/",
+    },
+  ]);
+});
 
-export default router
+router.get("/dexscreener/:chainId/:tokenAddresses", async (req, res) => {
+  const { chainId, tokenAddresses } = req.params;
+
+  try {
+    const response = await fetch(
+      `https://api.dexscreener.com/tokens/v1/${chainId}/${tokenAddresses}`,
+      {
+        method: "GET",
+      },
+    );
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).end();
+  }
+});
+
+// Use Token Middleware
+router.use(tokenMiddleware);
+
+// Use v1 routers
+router.use("/v1/users", usersRouter);
+router.use("/v1/assets", assetsRouter);
+router.use("/v1/transactions", transactionsRouter);
+router.use("/v1/holdings", holdingsRouter);
+
+export default router;

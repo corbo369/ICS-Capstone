@@ -9,30 +9,30 @@ import swaggerJSDoc from "swagger-jsdoc";
 
 // Obtains openapi host, or returns localhost if not found
 function url() {
-    if (process.env.OPENAPI_HOST) {
-        return process.env.OPENAPI_HOST;
-    } else {
-        const port = process.env.PORT || "3000";
-        return `http://localhost:${port}`;
-    }
+  if (process.env.OPENAPI_HOST) {
+    return process.env.OPENAPI_HOST;
+  } else {
+    const port = process.env.PORT || "3000";
+    return `http://localhost:${port}`;
+  }
 }
 
 // Openapi options configuration
 const options = {
-    definition: {
-        openapi: "3.1.0",
-        info: {
-            title: "restful-api",
-            version: "0.0.1",
-            description: "restful-api",
-        },
-        servers: [
-            {
-                url: url(),
-            },
-        ],
+  definition: {
+    openapi: "3.1.0",
+    info: {
+      title: "restful-api",
+      version: "0.0.1",
+      description: "restful-api",
     },
-    apis: ["./routes/*.js", "./models/*.js", "./routes/api/v1/*.js"],
+    servers: [
+      {
+        url: url(),
+      },
+    ],
+  },
+  apis: ["./routes/*.js", "./models/*.js", "./routes/api/v1/*.js"],
 };
 
 export default swaggerJSDoc(options);

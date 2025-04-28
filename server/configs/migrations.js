@@ -13,13 +13,13 @@ import logger from "./logger.js";
 
 // Create Umzug instance
 const umzug = new Umzug({
-    migrations: { glob: "migrations/*.js" },
-    context: database.getQueryInterface(),
-    storage: new SequelizeStorage({
-        sequelize: database,
-        modelName: "migrations",
-    }),
-    logger: logger,
+  migrations: { glob: "migrations/*.js" },
+  context: database.getQueryInterface(),
+  storage: new SequelizeStorage({
+    sequelize: database,
+    modelName: "migrations",
+  }),
+  logger: logger,
 });
 
 export default umzug;

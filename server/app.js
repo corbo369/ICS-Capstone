@@ -4,6 +4,11 @@
  * @exports app Express application
  */
 
+// TODO
+// Clean up routes
+// Seed DB naturally
+// Unit Testing
+
 // Load environment (must be first)
 import "@dotenvx/dotenvx/config";
 
@@ -12,10 +17,9 @@ import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
-import helmet from "helmet";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
 // Import configurations
 import logger from "./configs/logger.js";
@@ -26,6 +30,7 @@ import requestLogger from "./middlewares/request-logger.js";
 
 // Import routers
 import apiRouter from "./routes/api.js";
+import authRouter from "./routes/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,10 +39,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Use libraries
-app.use(cors({
-  origin: '*',
-}));
-//app.use(helmet());
+app.use(cors({ origin: "*" }));
 app.use(compression());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -47,26 +49,13 @@ app.use(express.json());
 app.use(requestLogger);
 
 // Use static files
-app.use(express.static(path.resolve(__dirname, '../portfolio/dist')));
+app.use(express.static(path.resolve(__dirname, "../portfolio/dist")));
 
 // Use routers
 app.use("/api", apiRouter);
 
-app.get("/api/dexscreener/:chainId/:tokenAddresses", async (req, res) => {
-  const { chainId, tokenAddresses } = req.params;
-
-  try {
-    const response = await fetch(`https://api.dexscreener.com/tokens/v1/${chainId}/${tokenAddresses}`, {
-      method: 'GET',
-    });
-    //Check error ?
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    console.error("Error", error);
-    res.status(500).json({ error: "Failed to fetch data" });
-  }
-})
+// Use auth routes
+app.use("/auth", authRouter);
 
 // Use SwaggerJSDoc router if enabled
 if (process.env.OPENAPI_VISIBLE === "true") {

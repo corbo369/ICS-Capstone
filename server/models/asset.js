@@ -42,27 +42,27 @@ import Sequelize from "sequelize";
  *           Symbol: HYPE
  */
 const AssetSchema = {
-    AssetID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    ChainID: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    ContractAddress: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    Name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    Symbol: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
+  AssetID: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  ChainID: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  ContractAddress: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  Name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  Symbol: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
 };
 
 export default AssetSchema;

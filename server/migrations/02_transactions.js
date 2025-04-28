@@ -23,6 +23,7 @@ export async function up({ context: queryInterface }) {
     UserID: {
       type: Sequelize.INTEGER,
       allowNull: false,
+      foreignKey: true,
       references: {
         model: "Users",
         key: "UserID",
@@ -31,6 +32,7 @@ export async function up({ context: queryInterface }) {
     AssetID: {
       type: Sequelize.INTEGER,
       allowNull: false,
+      foreignKey: true,
       references: {
         model: "Assets",
         key: "AssetID",

@@ -60,6 +60,7 @@ const TransactionSchema = {
   UserID: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    foreignKey: true,
     references: {
       model: "Users",
       key: "UserID",
@@ -68,6 +69,7 @@ const TransactionSchema = {
   AssetID: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    foreignKey: true,
     references: {
       model: "Assets",
       key: "AssetID",

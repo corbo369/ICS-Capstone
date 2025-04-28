@@ -1,66 +1,90 @@
+/**
+ * @file Main Menu Component
+ * @author Sam DeCoursey <samdecoursey@ksu.edu>
+ */
+
+// Import Libraries
 import React, { useState } from "react";
 
-import { DexHolding, Transaction } from "../types/holdings";
+// Import Types
+import { Asset, Holding, Transaction } from "../types/database.ts";
 
+// Import Components
 import Holdings from "./Holdings";
 import Transactions from "./Transactions";
 import AddTransaction from "./AddTransaction";
+import Reports from "./Reports.tsx";
 
+// Component Props
 interface MainMenuProps {
-    dexHoldings: DexHolding[];
+    assets: Asset[];
+    addAsset: (asset: any) => Promise<any>;
+    holdings: Holding[];
     transactions: Transaction[];
     addTransaction: (transaction: any) => void;
     totalValue: () => number;
 }
 
-const MainMenu: React.FC<MainMenuProps> = ({ dexHoldings, transactions, addTransaction, totalValue }) => {
+const MainMenu: React.FC<MainMenuProps> = ({ assets, addAsset, holdings, transactions, addTransaction, totalValue }) => {
 
-    const [activeTab, setActiveTab] = useState<"holdings" | "txns" | "addTxn">("holdings");
+    // State variables
+    const [activeTab, setActiveTab] = useState<"holdings" | "txns" | "addTxn" | "reports">("holdings");
 
+    // Renders active tab based on state
     const renderTab = {
         holdings: (
-            <Holdings dexHoldings={dexHoldings} />
+            <Holdings holdings={holdings} />
         ),
         txns: (
             <Transactions transactions={transactions} />
         ),
         addTxn: (
-            <div className="h-full px-30 py-6">
-                <AddTransaction addTransaction={addTransaction} setActiveTab={setActiveTab} />
+            <div className="h-7/10 px-30 py-10">
+                <AddTransaction assets={assets} addAsset={addAsset} addTransaction={addTransaction} setActiveTab={setActiveTab} />
             </div>
+        ),
+        reports: (
+            <Reports />
         )
     }
 
     return (
-        <div className="h-full bg-white border-4 border-blue-600 rounded-sm flex flex-col">
-            <nav className="w-full bg-blue-400 text-white p-3 top-0 left-0">
+        <div className="h-full border-4 border-black rounded-sm flex flex-col">
+            {/* Navbar */}
+            <nav className="w-full bg-gray-900 text-white p-3 top-0 left-0">
                 <div className="mx-auto flex justify-between items-center">
-                    <button className="text-black bg-blue-200 hover:bg-blue-100 border-2 border-blue-600 px-3 py-2 rounded-lg">
-                        Select Portfolio =
-                    </button>
-                    <ul className="md:flex space-x-9 text-center">
-                        <li className={`p-2 cursor-pointer ${activeTab === "holdings" ? "underline underline-offset-4 text-white" : ""}`}
-                            onClick={() => setActiveTab("holdings")}
-                        >
-                            Holdings
-                        </li>
-                        <li className={`p-2 cursor-pointer ${activeTab === "txns" ? "underline underline-offset-4 text-white" : ""}`}
-                            onClick={() => setActiveTab("txns")}
-                        >
-                            Transactions
-                        </li>
-                    </ul>
-                    <button className="text-black bg-blue-200 hover:bg-blue-100 border-2 border-blue-600 px-3 py-2 rounded-lg"
-                            onClick={() => setActiveTab("addTxn")}
+                    <button
+                      className="bg-gray-700 border-gray-500 border-1 w-2/11 px-3 py-2 rounded-md hover:bg-gray-600 hover:cursor-pointer"
+                      onClick={() => setActiveTab("reports")}
                     >
-                        + Add Transaction
+                        View Reports
+                    </button>
+                    <h1 className="text-3xl"> ${totalValue().toLocaleString(undefined, { maximumFractionDigits: 2 })} </h1>
+                    <button
+                      className="bg-gray-700 border-gray-500 border-1 w-2/11 px-3 py-2 rounded-md hover:bg-gray-600 hover:cursor-pointer"
+                      onClick={() => setActiveTab("addTxn")}
+                    >
+                        Add Transaction
                     </button>
                 </div>
             </nav>
-            <div className="w-full h-20 flex justify-center items-center text-2xl p-4 bg-blue-200 border-b-3 border-blue-400">
-                <h1> Portfolio Value: ${totalValue().toLocaleString(undefined, { maximumFractionDigits: 2 })} </h1>
+            {/* Total Portfolio Value Display */}
+            <div className="w-full h-12 flex justify-center items-center p-4 bg-gray-800 border-b-3 border-black">
+                <ul className="md:flex space-x-9 text-center">
+                    <li className={`p-2 cursor-pointer ${activeTab === "holdings" ? "underline underline-offset-4 text-white" : ""}`}
+                        onClick={() => setActiveTab("holdings")}
+                    >
+                        Holdings
+                    </li>
+                    <li className={`p-2 cursor-pointer ${activeTab === "txns" ? "underline underline-offset-4 text-white" : ""}`}
+                        onClick={() => setActiveTab("txns")}
+                    >
+                        Transactions
+                    </li>
+                </ul>
             </div>
-            <div className="flex-1 overflow-y-auto p-4">
+            {/* Active Tab */}
+            <div className="dark w-full flex-1 overflow-y-auto">
                 {renderTab[activeTab]}
             </div>
         </div>

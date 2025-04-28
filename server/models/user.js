@@ -26,16 +26,16 @@
 import Sequelize from "sequelize";
 
 const UserSchema = {
-    UserID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    UserAddress: {
-        type: Sequelize.STRING,
-        unique: true,
-        allowNull: false,
-    },
+  UserID: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  UserAddress: {
+    type: Sequelize.STRING,
+    unique: true,
+    allowNull: false,
+  },
 };
 
 export default UserSchema;

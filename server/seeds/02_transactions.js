@@ -6,18 +6,36 @@
  */
 
 // Timestamp in the appropriate format for the database
-const now = new Date().toISOString().slice(0, 23).replace("T", " ") + " +00:00";
+//const now = new Date().toISOString().slice(0, 23).replace("T", " ") + " +00:00";
 
 // Array of objects to add to the database
 const transactions = [
   {
     TransactionID: 1,
-    UserID: 1,
+    UserID: 2,
     AssetID: 1,
-    Amount: 120.27,
-    Price: 14.2,
+    Amount: 0.273,
+    Price: 80000,
     Type: true,
-    Date: now,
+    Date: "2025-04-16 20:34:32.709",
+  },
+  {
+    TransactionID: 2,
+    UserID: 2,
+    AssetID: 2,
+    Amount: 900,
+    Price: 12.85,
+    Type: true,
+    Date: "2025-04-17 20:34:32.709",
+  },
+  {
+    TransactionID: 3,
+    UserID: 2,
+    AssetID: 3,
+    Amount: 7500,
+    Price: 0.8,
+    Type: true,
+    Date: "2025-04-18 20:34:32.709",
   },
 ];
 

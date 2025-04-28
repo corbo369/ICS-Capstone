@@ -14,10 +14,10 @@ import logger from "../configs/logger.js";
 // Log Format
 // :method :url :status :response-time ms - :res[content-length]
 const stream = {
-    write: (message) => {
-        // log using the 'http' severity
-        logger.http(message.trim());
-    },
+  write: (message) => {
+    // log using the 'http' severity
+    logger.http(message.trim());
+  },
 };
 
 // See https://github.com/expressjs/morgan?tab=readme-ov-file#api

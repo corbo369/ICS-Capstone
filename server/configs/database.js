@@ -12,9 +12,9 @@ import logger from "./logger.js";
 
 // Create Sequelize instance
 const sequelize = new Sequelize({
-    dialect: "sqlite",
-    storage: process.env.DATABASE_FILE || ":memory:",
-    logging: logger.sql.bind(logger),
+  dialect: "sqlite",
+  storage: process.env.DATABASE_FILE || ":memory:",
+  logging: logger.sql.bind(logger),
 });
 
 export default sequelize;

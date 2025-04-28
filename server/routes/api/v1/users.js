@@ -15,8 +15,8 @@ import express from "express";
 // Create Express router
 const router = express.Router();
 
-// Import models
-import { User, Asset, Transaction } from "../../../models/models.js";
+// Import Database
+import database from "../../../configs/database.js";
 
 // Import logger
 import logger from "../../../configs/logger.js";
@@ -46,50 +46,8 @@ import logger from "../../../configs/logger.js";
  */
 router.get("/", async function (req, res, next) {
   try {
-    const users = await User.findAll();
-    res.json(users);
-  } catch (error) {
-    logger.error(error);
-    res.status(500).end();
-  }
-});
-
-router.get("/:userId/transactions", async (req, res) => {
-  try {
-    const userId = parseInt(req.params.userId);
-    const transactions = await Transaction.findAll({
-      where: { UserID: userId },
-      order: [["Date", "DESC"]],
-      include: [
-        {
-          model: Asset,
-          as: "Asset",
-          attributes: ["Name", "Symbol"]
-        }
-      ]
-    });
-    res.json(transactions);
-  } catch (error) {
-    logger.error(error);
-    res.status(500).end();
-  }
-});
-
-router.post("/:userId/transactions", async (req, res) => {
-  try {
-    const userId = parseInt(req.params.userId);
-    const { AssetID, Amount, Price, Type, Date } = req.body;
-
-    const newTransaction = await Transaction.create({
-      UserID: userId,
-      AssetID,
-      Amount,
-      Price,
-      Type,
-      Date,
-    });
-
-    res.status(201).json(newTransaction);
+    const users = await database.query("SELECT * FROM Users");
+    res.json(users[0]);
   } catch (error) {
     logger.error(error);
     res.status(500).end();

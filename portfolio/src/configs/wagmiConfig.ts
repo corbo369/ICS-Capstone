@@ -1,5 +1,10 @@
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+/**
+ * @file WAGMI Configuration File
+ * @author Sam DeCoursey <samdecoursey@ksu.edu>
+ */
 
+// Import Configurations
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { mainnet, arbitrum, base } from "wagmi/chains";
 
 export const config = getDefaultConfig({

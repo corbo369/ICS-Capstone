@@ -14,37 +14,45 @@ import { Sequelize } from "sequelize";
  * @param {queryInterface} context the database context to use
  */
 export async function up({ context: queryInterface }) {
-  await queryInterface.createTable("Holdings", {
-    HoldingID: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    UserID: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      references: {
-        model: "Users",
-        key: "UserID",
+  await queryInterface.createTable(
+    "Holdings",
+    {
+      HoldingID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      UserID: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true,
+        references: {
+          model: "Users",
+          key: "UserID",
+        },
+      },
+      AssetID: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignKey: true,
+        references: {
+          model: "Assets",
+          key: "AssetID",
+        },
+      },
+      Amount: {
+        type: Sequelize.DECIMAL,
+        allowNull: false,
       },
     },
-    AssetID: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      references: {
-        model: "Assets",
-        key: "AssetID",
+    {
+      uniqueKeys: {
+        UserAssetUnique: {
+          fields: ["UserID", "AssetID"],
+        },
       },
     },
-    Amount: {
-      type: Sequelize.DECIMAL,
-      allowNull: false,
-    },
-    AveragePrice: {
-      type: Sequelize.DECIMAL,
-      allowNull: false,
-    },
-  });
+  );
 }
 
 /**
