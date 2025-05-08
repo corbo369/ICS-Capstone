@@ -16,10 +16,12 @@ import express from "express";
 import tokenMiddleware from "../middlewares/token.js";
 
 // Import v1 routers
-import usersRouter from "./api/v1/users.js";
 import assetsRouter from "./api/v1/assets.js";
 import transactionsRouter from "./api/v1/transactions.js";
 import holdingsRouter from "./api/v1/holdings.js";
+import reportsRouter from "./api/v1/reports.js";
+
+// Import logger
 import logger from "../configs/logger.js";
 
 // Create Express router
@@ -86,9 +88,9 @@ router.get("/dexscreener/:chainId/:tokenAddresses", async (req, res) => {
 router.use(tokenMiddleware);
 
 // Use v1 routers
-router.use("/v1/users", usersRouter);
 router.use("/v1/assets", assetsRouter);
 router.use("/v1/transactions", transactionsRouter);
 router.use("/v1/holdings", holdingsRouter);
+router.use("/v1/reports", reportsRouter);
 
 export default router;

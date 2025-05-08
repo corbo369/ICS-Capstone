@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react"
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils.ts";
+import { Button } from "@/components/ui/button.tsx"
 import {
   Command,
   CommandEmpty,
@@ -10,23 +10,36 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@/components/ui/command.tsx";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/components/ui/popover.tsx";
 
-import { Option } from "../types/comboBox.ts";
+import { Option } from "@/types/comboBox.ts";
 
 interface ComboBoxProps {
   options: Option[];
   value: string;
   onChange: (value: string) => void;
+  type: ("assets" | "chains" | "reports");
 }
 
-const ComboBox: React.FC<ComboBoxProps> = ({ options, value, onChange }) => {
+const ComboBox: React.FC<ComboBoxProps> = ({ options, value, onChange, type }) => {
   const [open, setOpen] = useState<boolean>(false)
+
+  const labelHelper = () => {
+    if (type === "assets") return "Select Asset";
+    if (type === "chains") return "Select Chain";
+    if (type === "reports") return "Select Report";
+  }
+
+  const placeholderHelper = () => {
+    if (type === "assets") return "Search Assets";
+    if (type === "chains") return "Search Chains";
+    if (type === "reports") return "Search Reports";
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -35,26 +48,31 @@ const ComboBox: React.FC<ComboBoxProps> = ({ options, value, onChange }) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="h-full w-full"
         >
           {value
             ? options.find((o) => o.value === value)?.label
-            : "Select Asset..."}
+            : labelHelper()}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-full p-0 dark">
         <Command>
-          <CommandInput placeholder="Search Assets..." className="h-9" />
+          <CommandInput placeholder={placeholderHelper()} className="h-9" />
           <CommandList>
             <CommandEmpty>No assets found.</CommandEmpty>
             <CommandGroup>
               {options.map((o) => (
                 <CommandItem
                   key={o.value}
-                  value={o.value}
+                  value={o.label}
                   onSelect={(currentValue) => {
-                    onChange(currentValue);
+                    const match = options.find(
+                      (option) => option.label === currentValue
+                    );
+                    if (match) {
+                      onChange(match.value);
+                    }
                     setOpen(false)
                   }}
                 >

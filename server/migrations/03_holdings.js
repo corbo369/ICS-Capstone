@@ -1,5 +1,5 @@
 /**
- * @file Holdings table migration
+ * @file HoldingsList table migration
  * @author Sam DeCoursey <samdecoursey@ksu.edu>
  * @exports up the Up migration
  * @exports down the Down migration

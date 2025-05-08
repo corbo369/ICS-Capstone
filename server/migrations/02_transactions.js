@@ -1,5 +1,5 @@
 /**
- * @file Transactions table migration
+ * @file TransactionsList table migration
  * @author Sam DeCoursey <samdecoursey@ksu.edu>
  * @exports up the Up migration
  * @exports down the Down migration
@@ -51,7 +51,7 @@ export async function up({ context: queryInterface }) {
       allowNull: false,
     },
     Date: {
-      type: Sequelize.DATE,
+      type: Sequelize.DATEONLY,
       allowNull: false,
     },
   });

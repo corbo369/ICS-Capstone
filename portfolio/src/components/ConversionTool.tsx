@@ -1,151 +1,175 @@
+/**
+ * @file Conversion Tool Component
+ * @author Sam DeCoursey <samdecoursey@ksu.edu>
+ */
+
+// Import Libraries
 import React, { useState, useEffect } from "react";
 
-import ComboBox from "@/components/ComboBox.tsx";
+// Import Components
+import ComboBox from "@/components/ui/combo-box.tsx";
 
-import { Asset } from "../types/database.ts";
+// Import Types
+import { Asset } from "@/types/database.ts";
 
+// Component Props
 interface ConversionToolProps {
   assets: Asset[];
 }
 
 const ConversionTool: React.FC<ConversionToolProps> = ({ assets }) => {
-
-  const [assetsSelected, setAssetsSelected] = useState<boolean>(false);
-
+  // Asset ID state
   const [assetOneId, setAssetOneId] = useState<number | null>(null);
   const [assetTwoId, setAssetTwoId] = useState<number | null>(null);
 
-  const [assetOneSymbol, setAssetOneSymbol] = useState<string>("");
-  const [assetTwoSymbol, setAssetTwoSymbol] = useState<string>("");
+  // Asset price state
+  const [assetOnePrice, setAssetOnePrice] = useState<number>(0);
+  const [assetTwoPrice, setAssetTwoPrice] = useState<number>(0);
 
-  const [assetOnePrice, setAssetOnePrice] = useState<string>("");
-  const [assetTwoPrice, setAssetTwoPrice] = useState<string>("");
+  // Asset amount state
+  const [assetOneAmount, setAssetOneAmount] = useState<number | undefined>(undefined);
+  const [assetTwoAmount, setAssetTwoAmount] = useState<number | undefined>(undefined);
 
-  const [assetOneAmount, setAssetOneAmount] = useState<string>("");
-  const [assetTwoAmount, setAssetTwoAmount] = useState<string>("");
-
+  // Fetch the price of both selected assets upon selection changes
   useEffect(() => {
     const fetchSelectedAssetIdPrice = async () => {
       try {
-        const assetOne = assets.find(a => a.AssetID === assetOneId);
-        const assetTwo = assets.find(a => a.AssetID === assetTwoId);
+        // Only fetch if both assets are selected
+        if (assetOneId && assetTwoId) {
+          // Find the assets from the array
+          const assetOne = assets.find(a => a.AssetID === assetOneId);
+          const assetTwo = assets.find(a => a.AssetID === assetTwoId);
 
-        if(assetOne && assetTwo) {
-          const responseOne = await fetch(`/api/dexscreener/${assetOne.ChainID}/${assetOne.ContractAddress}`);
-          const dataOne = await responseOne.json();
+          // Checks that both assets were found
+          if(assetOne && assetTwo) {
+            // Fetch asset one price
+            const resOne = await fetch(`/api/dexscreener/${assetOne.ChainID}/${assetOne.ContractAddress}`);
+            const dataOne = await resOne.json();
 
-          const responseTwo = await fetch(`/api/dexscreener/${assetTwo.ChainID}/${assetTwo.ContractAddress}`);
-          const dataTwo = await responseTwo.json();
+            // Fetch asset two price
+            const resTwo = await fetch(`/api/dexscreener/${assetTwo.ChainID}/${assetTwo.ContractAddress}`);
+            const dataTwo = await resTwo.json();
 
-          setAssetOneSymbol(assetOne.Symbol);
-          setAssetTwoSymbol(assetTwo.Symbol);
-          setAssetOnePrice(dataOne[0].priceUsd);
-          setAssetTwoPrice(dataTwo[0].priceUsd);
-          setAssetsSelected(true);
+            // Update state
+            setAssetOnePrice(dataOne[0].priceUsd);
+            setAssetTwoPrice(dataTwo[0].priceUsd);
+          }
         }
       } catch (error) {
         console.error("Error fetching dexscreener data: ", error);
       }
     };
 
-    if (assetOneId !== null && assetTwoId !== null) {
-      fetchSelectedAssetIdPrice();
-    }
+    fetchSelectedAssetIdPrice();
   }, [assetOneId, assetTwoId]);
 
-  const handleConversion = (amount: string) => {
-    setAssetOneAmount(amount);
-    const convertedAmount = (parseFloat(amount) * parseFloat(assetOnePrice)) / parseFloat(assetTwoPrice);
-    setAssetTwoAmount(convertedAmount.toLocaleString(undefined, { maximumFractionDigits: 5 }));
+  // Generate options array for the Combo Boxes
+  const options = assets.map((a) => ({
+    value: a.AssetID.toString(),
+    label: `${a.Name} (${a.Symbol})`,
+  }));
+
+  // Rounding helper function
+  const round = (num: number, dec: number = 6) => {
+    return parseFloat(num.toFixed(dec));
+  };
+
+  // Handles changes to the amount one input
+  const handleAmountOneChange = (newAmount: number) => {
+    // Revert to placeholders if amount is set to 0
+    if (newAmount === undefined) {
+      setAssetOneAmount(undefined);
+      setAssetTwoAmount(undefined);
+    } else {
+      // Set asset one amount to the incoming value
+      setAssetOneAmount(round(newAmount));
+      // Calculate the converted amount for asset two amount
+      setAssetTwoAmount(round((assetOnePrice * newAmount) / assetTwoPrice));
+    }
   }
 
-  const assetOneOptions = assets.map((a) => ({
-    value: a.AssetID.toString(),
-    label: `${a.Name} (${a.Symbol})`,
-  }));
+  // Handles changes to the amount two input
+  const handleAmountTwoChange = (newAmount: number) => {
+    // Revert to placeholders if amount is set to 0
+    if (newAmount === undefined) {
+      setAssetOneAmount(undefined);
+      setAssetTwoAmount(undefined);
+    } else {
+      // Calculate the converted amount for asset one amount
+      setAssetOneAmount(round((assetTwoPrice * newAmount) / assetOnePrice));
+      // Set asset two amount to the incoming value
+      setAssetTwoAmount(round(newAmount));
+    }
+  }
 
-  const assetTwoOptions = assets.map((a) => ({
-    value: a.AssetID.toString(),
-    label: `${a.Name} (${a.Symbol})`,
-  }));
-
-    return (
-        <div className="dark h-full w-full bg-gray-800 border-4 border-black rounded-sm flex flex-col">
-          <h2 className="text-lg font-semibold text-center mb-1">Conversion Tool</h2>
-          <div className="h-full m-3 bg-gray-700 border-2 border-black rounded-sm flex flex-col">
-            <div className="flex flex-row mt-3">
-              <div className="h-full w-1/2 text-center">
-                <ComboBox
-                  options={assetOneOptions}
-                  value={assetOneId ? assetOneId.toString() : ""}
-                  onChange={(newValue) => setAssetOneId(parseInt(newValue))}
-                />
-                {assetsSelected ? (
-                  <div className="w-full flex flex-row">
-                    <input
-                      name="amount"
-                      type="number"
-                      step="any"
-                      placeholder="Amount"
-                      className="w-1/2 text-center p-2"
-                      value={assetOneAmount}
-                      onChange={(e) => handleConversion(e.target.value)}
-                    />
-                    <input
-                      name="price"
-                      type="number"
-                      step="any"
-                      placeholder="Price"
-                      className="w-1/2 text-center p-2"
-                      value={assetOnePrice}
-                      onChange={(e) => setAssetOnePrice(e.target.value)}
-                    />
-                  </div>
-                ) : (
-                  <div/>
-                )}
-              </div>
-              <div className="h-full w-1/2 text-center">
-                <ComboBox
-                  options={assetTwoOptions}
-                  value={assetTwoId ? assetTwoId.toString() : ""}
-                  onChange={(newValue) => setAssetTwoId(parseInt(newValue))}
-                />
-                {assetsSelected ? (
-                  <div className="w-full flex flex-row">
-                    <input
-                      name="price"
-                      type="number"
-                      step="any"
-                      placeholder="Price"
-                      className="w-full text-center p-2"
-                      value={assetTwoPrice}
-                      onChange={(e) => setAssetTwoPrice(e.target.value)}
-                    />
-                  </div>
-                ) : (
-                  <div/>
-                )}
-              </div>
+  return (
+    <div className="h-full w-full rounded-sm flex flex-col justify-around dark bg-gray-700 border-3 border-black">
+      <h2 className="text-lg font-semibold text-center">Conversion Tool</h2>
+      {/* Asset one card */}
+      <div className="h-4/10 p-2 flex flex-col justify-between">
+        <div className="h-full w-full pl-3 pr-3 rounded-3xl flex flex-row justify-center dark bg-gray-600 border-3 border-gray-800">
+          <div className="w-full flex flex-row justify-between items-center">
+            {/* Asset one select box */}
+            <div className="h-1/2 w-1/3 rounded-lg border-2 border-gray-800">
+              <ComboBox
+                options={options}
+                value={assetOneId ? assetOneId.toString() : ""}
+                onChange={(newValue) => setAssetOneId(parseInt(newValue))}
+                type={"assets"}
+              />
             </div>
-            {assetsSelected ? (
-              <div className="h-full w-full bg-gray-700 flex flex-row text-center">
-                <div className="h-full w-1/2 flex flex-col text-center">
-                  <h2>{assetOneAmount}</h2>
-                  <h3>{assetOneSymbol}</h3>
-                </div>
-                <h1>{`=>`}</h1>
-                <div className="h-full w-1/2 flex flex-col text-center">
-                  <h2>{assetTwoAmount}</h2>
-                  <h3>{assetTwoSymbol}</h3>
-                </div>
-              </div>
-            ) : (
-              <div/>
-            )}
+            {/* Amount one input */}
+            <input
+              name="amount"
+              type="number"
+              inputMode="decimal"
+              placeholder="0.00"
+              autoComplete="off"
+              className="w-1/2 text-right text-2xl mr-3
+                focus:outline-none
+                placeholder:text-gray-400
+                [appearance:textfield]
+                [&::-webkit-inner-spin-button]:appearance-none"
+              value={assetOneAmount === undefined ? "" : assetOneAmount}
+              onChange={(e) => handleAmountOneChange(parseFloat(e.target.value))}
+            />
           </div>
         </div>
-    );
+      </div>
+      {/* Asset two card */}
+      <div className="h-4/10 w-full p-2 flex flex-col justify-between">
+        <div className="h-full w-full pl-3 pr-3 rounded-3xl flex flex-row justify-center dark bg-gray-600 border-3 border-gray-800">
+          <div className="w-full flex flex-row justify-between items-center">
+            {/* Asset two select box */}
+            <div className="h-1/2 w-1/3 rounded-lg border-2 border-gray-800">
+              <ComboBox
+                options={options}
+                value={assetTwoId ? assetTwoId.toString() : ""}
+                onChange={(newValue) => setAssetTwoId(parseInt(newValue))}
+                type={"assets"}
+              />
+            </div>
+            {/* Amount two input */}
+            <input
+              name="amount"
+              type="number"
+              inputMode="decimal"
+              placeholder="0.00"
+              autoComplete="off"
+              step="any"
+              className="w-1/2 text-right text-2xl mr-3
+                focus:outline-none
+                placeholder:text-gray-400
+                [appearance:textfield]
+                [&::-webkit-inner-spin-button]:appearance-none"
+              value={assetTwoAmount === undefined ? "" : assetTwoAmount}
+              onChange={(e) => handleAmountTwoChange(parseFloat(e.target.value))}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default ConversionTool;

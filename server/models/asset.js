@@ -18,6 +18,7 @@ import Sequelize from "sequelize";
  *         - ContractAddress
  *         - Name
  *         - Symbol
+ *         - ImagePath
  *       properties:
  *         AssetID:
  *           type: integer
@@ -34,12 +35,16 @@ import Sequelize from "sequelize";
  *         Symbol:
  *           type: string
  *           description: symbol of the asset
+ *         ImagePath:
+ *           type: string
+ *           description: image url of the asset
  *       example:
  *           AssetID: 1
  *           ChainID: hyperliquid
  *           ContractAddress: "0x0d01dc56dcaaca66ad901c959b4011ec"
- *           Name: Hyperliquid
+ *           Name: HYPE
  *           Symbol: HYPE
+ *           ImagePath: https://dd.dexscreener.com/ds-data/tokens/hyperliquid/0x0d01dc56dcaaca66ad901c959b4011ec.png?key=ac1a77
  */
 const AssetSchema = {
   AssetID: {
@@ -62,6 +67,10 @@ const AssetSchema = {
   Symbol: {
     type: Sequelize.STRING,
     allowNull: false,
+  },
+  ImagePath: {
+    type: Sequelize.STRING,
+    allowNull: true,
   },
 };
 

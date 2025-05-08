@@ -4,11 +4,6 @@
  * @exports app Express application
  */
 
-// TODO
-// Clean up routes
-// Seed DB naturally
-// Unit Testing
-
 // Load environment (must be first)
 import "@dotenvx/dotenvx/config";
 

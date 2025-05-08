@@ -20,4 +20,26 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      // Proxy all API requests
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false
+      },
+      // Proxy Open API Docs
+      '/docs': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false
+      },
+      // Proxy Authentication Requests
+      '/auth': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false
+      },
+    }
+  }
 })

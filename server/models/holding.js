@@ -17,7 +17,6 @@ import Sequelize from "sequelize";
  *         - UserID
  *         - AssetID
  *         - Amount
- *         - AveragePrice
  *       properties:
  *         HoldingID:
  *           type: integer
@@ -30,16 +29,13 @@ import Sequelize from "sequelize";
  *           description: asset of the holding
  *         Amount:
  *           type: decimal
- *           description: amount user is holding
- *         AveragePrice:
- *           type: decimal
- *           description: average cost basis
+ *           description: amount held
  *       example:
  *           HoldingID: 1
  *           UserID: 1
  *           AssetID: 1
- *           Amount: 120.27
- *           AveragePrice: 14.2
+ *           Amount: 2000
+ *           AveragePrice: 15
  */
 const HoldingSchema = {
   HoldingID: {
@@ -66,10 +62,6 @@ const HoldingSchema = {
     },
   },
   Amount: {
-    type: Sequelize.DECIMAL,
-    allowNull: false,
-  },
-  AveragePrice: {
     type: Sequelize.DECIMAL,
     allowNull: false,
   },

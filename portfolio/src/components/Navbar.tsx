@@ -66,7 +66,7 @@ const Navbar: React.FC = () => {
   return (
         <nav className="w-full bg-gray-900 text-white p-3 fixed top-0 left-0 z-1">
             <div className="w-full flex justify-between items-center px-4">
-                <div className="text-xl font-bold">PORTFOLIO</div>
+                <div className="text-3xl font-bold"> CORFOLIO </div>
                 <ConnectButton />
             </div>
         </nav>

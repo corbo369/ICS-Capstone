@@ -36,6 +36,10 @@ export async function up({ context: queryInterface }) {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    ImagePath: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
   });
 }
 

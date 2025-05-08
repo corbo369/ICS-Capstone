@@ -22,9 +22,9 @@ const options = {
   definition: {
     openapi: "3.1.0",
     info: {
-      title: "restful-api",
+      title: "Corfolio",
       version: "0.0.1",
-      description: "restful-api",
+      description: "API Routes for Corfolio App",
     },
     servers: [
       {

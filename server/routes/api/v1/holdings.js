@@ -25,7 +25,7 @@ import logger from "../../../configs/logger.js";
 import authenticateUser from "../../../middlewares/authenticate-user.js";
 
 /**
- * Gets the list of holdings for a certain user
+ * Gets the list of holdings for a specific user
  *
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
@@ -39,7 +39,7 @@ import authenticateUser from "../../../middlewares/authenticate-user.js";
  *     tags: [holdings]
  *     parameters:
  *          - in: path
- *            name: id
+ *            name: user ID
  *            required: true
  *            schema:
  *              type: integer
@@ -51,32 +51,46 @@ import authenticateUser from "../../../middlewares/authenticate-user.js";
  *           application/json:
  *             schema:
  *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Holding'
+ *             example:
+ *               HoldingID: 1
+ *               Amount: 2000
+ *               Name: HYPE
+ *               Symbol: HYPE
+ *               ChainID: hyperliquid
+ *               ContractAddress: "0x0d01dc56dcaaca66ad901c959b4011ec"
+ *               ImagePath: https://dd.dexscreener.com/ds-data/tokens/hyperliquid/0x0d01dc56dcaaca66ad901c959b4011ec.png?key=ac1a77
+ *               AveragePrice: 15
  */
-router.get("/:id", authenticateUser, async function (req, res, next) {
+router.get("/:userId", authenticateUser, async function (req, res, next) {
   try {
-    const holdings = await database.query(
+    const UserID = parseInt(req.params.userId);
+
+    const [holdings] = await database.query(
       `
-        SELECT H.HoldingID, H.Amount, A.Name, A.Symbol, A.ChainID, A.ContractAddress,
-               (
-                   SELECT 
-                       CASE 
-                           WHEN SUM(CASE WHEN T.Type THEN T.Amount ELSE -T.Amount END) != 0
-                           THEN SUM(CASE WHEN T.Type THEN T.Amount * T.Price ELSE -T.Amount * T.Price END) 
-                                    / SUM(CASE WHEN T.Type THEN T.Amount ELSE -T.Amount END)
-                           ELSE 0
-                       END
-                   FROM Transactions T
-                   WHERE T.UserID = H.UserID
-                       AND T.AssetID = H.AssetID
-               ) AS AveragePrice
+        SELECT H.HoldingID, H.Amount, A.Name, A.Symbol, A.ChainID, A.ContractAddress, A.ImagePath,
+            (
+                SELECT 
+                    CASE 
+                        WHEN SUM(CASE WHEN T.Type THEN T.Amount ELSE -T.Amount END) != 0
+                        THEN SUM(CASE WHEN T.Type THEN T.Amount * T.Price ELSE -T.Amount * T.Price END) 
+                            / SUM(CASE WHEN T.Type THEN T.Amount ELSE -T.Amount END)
+                        ELSE 0
+                    END
+                FROM Transactions T
+                WHERE T.UserID = H.UserID
+                    AND T.AssetID = H.AssetID
+            ) AS AveragePrice
         FROM Holdings H
-                 INNER JOIN Assets A ON A.AssetID = H.AssetID
-        WHERE UserID=${req.params.id}
+            INNER JOIN Assets A ON A.AssetID = H.AssetID
+        WHERE UserID = :UserID
       `,
+      {
+        replacements: {
+          UserID: UserID,
+        },
+      },
     );
-    res.json(holdings[0]);
+    res.json(holdings);
   } catch (error) {
     logger.error(error);
     res.status(500).end();

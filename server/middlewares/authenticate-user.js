@@ -12,7 +12,7 @@ import logger from "../configs/logger.js";
  */
 function authenticateUser(req, res, next) {
   const tokenUserId = req.token?.id;
-  const routeUserId = parseInt(req.params.id);
+  const routeUserId = parseInt(req.params.userId);
 
   // If no user id in token, or no match, send 403 forbidden
   if (!tokenUserId || tokenUserId !== routeUserId) {

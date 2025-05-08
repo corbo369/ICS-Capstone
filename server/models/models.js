@@ -69,11 +69,14 @@ const Holding = database.define(
 // Define Associations
 User.hasMany(Holding, { foreignKey: "UserID", as: "Holdings" });
 User.hasMany(Transaction, { foreignKey: "UserID", as: "Transactions" });
+
 Asset.hasMany(Holding, { foreignKey: "AssetID", as: "Holdings" });
 Asset.hasMany(Transaction, { foreignKey: "AssetID", as: "Transactions" });
-Holding.belongsTo(User, { foreignKey: "UserID", as: "User" });
-Holding.belongsTo(Asset, { foreignKey: "AssetID", as: "Asset" });
+
 Transaction.belongsTo(User, { foreignKey: "UserID", as: "User" });
 Transaction.belongsTo(Asset, { foreignKey: "AssetID", as: "Asset" });
+
+Holding.belongsTo(User, { foreignKey: "UserID", as: "User" });
+Holding.belongsTo(Asset, { foreignKey: "AssetID", as: "Asset" });
 
 export { User, Asset, Transaction, Holding };

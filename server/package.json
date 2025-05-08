@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.39.0",
+    "axios": "^1.9.0",
     "compression": "^1.8.0",
     "cookie-parser": "~1.4.7",
     "cors": "^2.8.5",
@@ -19,6 +20,7 @@
     "express": "~4.21.2",
     "jsonwebtoken": "^9.0.2",
     "morgan": "~1.10.0",
+    "node-fetch": "^3.3.2",
     "sequelize": "^6.37.6",
     "sqlite3": "^5.1.7",
     "swagger-jsdoc": "^6.2.8",

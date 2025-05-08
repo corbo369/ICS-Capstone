@@ -41,15 +41,15 @@ import Sequelize from "sequelize";
  *           description: true = buy, false = sell
  *         Date:
  *           type: date
- *           description: timestamp of transaction
+ *           description: date of transaction
  *       example:
  *           TransactionID: 1
  *           UserID: 1
  *           AssetID: 1
- *           Amount: 120.27
- *           Price: 14.2
+ *           Amount: 2000
+ *           Price: 15
  *           Type: true
- *           Date: "timestamp"
+ *           Date: 2024-11-27
  */
 const TransactionSchema = {
   TransactionID: {
@@ -88,7 +88,7 @@ const TransactionSchema = {
     allowNull: false,
   },
   Date: {
-    type: Sequelize.DATE,
+    type: Sequelize.DATEONLY,
     allowNull: false,
   },
 };

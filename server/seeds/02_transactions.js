@@ -1,5 +1,5 @@
 /**
- * @file Transactions seed
+ * @file TransactionsList seed
  * @author Sam DeCoursey <samdecoursey@ksu.edu>
  * @exports up the Up migration
  * @exports down the Down migration
@@ -12,30 +12,57 @@
 const transactions = [
   {
     TransactionID: 1,
-    UserID: 2,
+    UserID: 1,
     AssetID: 1,
-    Amount: 0.273,
-    Price: 80000,
+    Amount: 2,
+    Price: 20000,
     Type: true,
-    Date: "2025-04-16 20:34:32.709",
+    Date: "2023-06-04",
   },
   {
     TransactionID: 2,
-    UserID: 2,
+    UserID: 1,
     AssetID: 2,
-    Amount: 900,
-    Price: 12.85,
+    Amount: 10,
+    Price: 1300,
     Type: true,
-    Date: "2025-04-17 20:34:32.709",
+    Date: "2023-06-07",
   },
   {
     TransactionID: 3,
-    UserID: 2,
+    UserID: 1,
     AssetID: 3,
-    Amount: 7500,
-    Price: 0.8,
+    Amount: 50,
+    Price: 20,
     Type: true,
-    Date: "2025-04-18 20:34:32.709",
+    Date: "2023-02-13",
+  },
+  {
+    TransactionID: 4,
+    UserID: 1,
+    AssetID: 4,
+    Amount: 5000,
+    Price: 1,
+    Type: true,
+    Date: "2024-03-20",
+  },
+  {
+    TransactionID: 5,
+    UserID: 1,
+    AssetID: 2,
+    Amount: 5,
+    Price: 2500,
+    Type: false,
+    Date: "2023-06-07",
+  },
+  {
+    TransactionID: 6,
+    UserID: 1,
+    AssetID: 1,
+    Amount: 1.5,
+    Price: 80000,
+    Type: false,
+    Date: "2024-03-20",
   },
 ];
 

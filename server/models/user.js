@@ -18,8 +18,8 @@
  *           type: string
  *           description: ethereum address for the user
  *       example:
- *           id: 1
- *           username: "0x0d01dc56dcaaca66ad901c959b4011ec"
+ *           UserID: 1
+ *           UserAddress: "0x0d01dc56dcaaca66ad901c959b4011ec"
  */
 
 // Import libraries

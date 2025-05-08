@@ -1,5 +1,5 @@
 /**
- * @file Integrates Server Database Through APIs
+ * @file API Route Integration Functions for Transactions
  * @author Sam DeCoursey <samdecoursey@ksu.edu>
  */
 
@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { DexscreenerResponse } from "../types/dexscreener.ts";
 import { Asset, Holding, Transaction } from "../types/database.ts";
 
-const useDatabase = (userId: number) => {
+const useTransactions = (userId: number) => {
     // State variables
     const [assets, setAssets] = useState<Asset[]>([]);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -71,7 +71,7 @@ const useDatabase = (userId: number) => {
         fetchTransactions();
     }, []);
 
-    // Fetches holdings for logged-in user, and fetches current prices
+    // Fetches holdings for logged-in user, then fetches current prices
     useEffect(() => {
         const fetchHoldingsUpdatePrices = async () => {
             try {
@@ -156,8 +156,8 @@ const useDatabase = (userId: number) => {
     // Adds a new transaction for the logged-in user to the database
     const addTransaction = async (transaction: Omit<Transaction, "TransactionID">) => {
         try {
-            // Inserts the provided transaction
-            const resTransaction = await fetch(`/api/v1/transactions/${userId}`, {
+            // Inserts the new transaction
+            const res = await fetch(`/api/v1/transactions/${userId}`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -165,35 +165,68 @@ const useDatabase = (userId: number) => {
                 },
                 body: JSON.stringify(transaction),
             });
-            const dataTransaction = await resTransaction.json();
 
-            // Fetches the asset for the provided transaction
-            const resAsset = await fetch(`/api/v1/assets/${dataTransaction.AssetID}`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-            const dataAsset = await resAsset.json();
-
-            // Constructs a new transaction object compatible with the frontend
-            const newTransaction: Transaction = {
-                TransactionID: dataTransaction.TransactionID,
-                Type: dataTransaction.Type,
-                Name: dataAsset.Name,
-                Amount: dataTransaction.Amount,
-                Symbol: dataAsset.Symbol,
-                Price: dataTransaction.Price,
-                Date: dataTransaction.Date,
-            }
+            // Transaction object is returned
+            const newTransaction = await res.json();
 
             // Append the transaction to current state
-            setTransactions((prev) => [newTransaction, ...prev]);
+            setTransactions((prev) => [{ ...newTransaction }, ...prev]);
         } catch (error) {
             console.error("Failed to add transaction: ", error);
         }
     };
+
+    // Edits an existing transaction in the database
+    const editTransaction = async (transaction: Transaction) => {
+        try {
+            // Updates the edited transaction
+            const res = await fetch(`/api/v1/transactions/${userId}/${transaction.TransactionID}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    Amount: transaction.Amount,
+                    Price: transaction.Price,
+                    Type: transaction.Type,
+                    Date: transaction.Date,
+                }),
+            });
+
+            // Transaction object is returned
+            const data = await res.json();
+
+            // Replace the transaction with the updated transaction
+            setTransactions((prev) =>
+              prev.map((t) =>
+                t.TransactionID === data.TransactionID ? { ...t, ...data } : t
+              )
+            );
+        } catch (error) {
+            console.error("Failed to edit transaction: ", error);
+        }
+    }
+
+    const deleteTransaction = async (transactionId: number) => {
+        try {
+            // Delete the transaction at the provided id
+            const res = await fetch(`/api/v1/transactions/${userId}/${transactionId}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+            });
+
+            // Confirm transaction was deleted
+            if (res.status === 200) {
+                setTransactions((prev) => prev.filter(t => t.TransactionID !== transactionId));
+            }
+        } catch (error) {
+            console.error("Failed to delete transaction: ", error);
+        }
+    }
 
     // Calculates the total value of the logged-in user's holdings
     const totalValue = () => {
@@ -204,7 +237,7 @@ const useDatabase = (userId: number) => {
         return sum;
     }
 
-    return { assets, holdings, transactions, addAsset, addTransaction, totalValue };
+    return { assets, holdings, transactions, addAsset, addTransaction, editTransaction, deleteTransaction, totalValue };
 };
 
-export default useDatabase;
+export default useTransactions;

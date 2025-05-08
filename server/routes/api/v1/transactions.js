@@ -39,7 +39,7 @@ import authenticateUser from "../../../middlewares/authenticate-user.js";
  *     tags: [transactions]
  *     parameters:
  *          - in: path
- *            name: id
+ *            name: user ID
  *            required: true
  *            schema:
  *              type: integer
@@ -51,21 +51,35 @@ import authenticateUser from "../../../middlewares/authenticate-user.js";
  *           application/json:
  *             schema:
  *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Transaction'
+ *             example:
+ *               TransactionID: 1
+ *               Type: true
+ *               Amount: 2000
+ *               Price: 15
+ *               Date: 2024-11-27
+ *               Name: HYPE
+ *               Symbol: HYPE
+ *               ImagePath: https://dd.dexscreener.com/ds-data/tokens/hyperliquid/0x0d01dc56dcaaca66ad901c959b4011ec.png?key=ac1a77
  */
-router.get("/:id", authenticateUser, async function (req, res, next) {
+router.get("/:userId", authenticateUser, async function (req, res, next) {
   try {
-    const transactions = await database.query(
+    const UserID = parseInt(req.params.userId);
+
+    const [transactions] = await database.query(
       `
-        SELECT T.TransactionID, T.Type, A.Name, T.Amount, A.Symbol, T.Price, T.Date
+        SELECT T.TransactionID, T.Type, T.Amount, T.Price, T.Date, A.Name, A.Symbol, A.ImagePath
         FROM Transactions T
-                 INNER JOIN Assets A ON A.AssetID = T.AssetID
-        WHERE UserID=${req.params.id}
+            INNER JOIN Assets A ON A.AssetID = T.AssetID
+        WHERE UserID = :UserID
         ORDER BY T.Date DESC
       `,
+      {
+        replacements: {
+          UserID: UserID,
+        },
+      },
     );
-    res.json(transactions[0]);
+    res.json(transactions);
   } catch (error) {
     logger.error(error);
     res.status(500).end();
@@ -82,11 +96,11 @@ router.get("/:id", authenticateUser, async function (req, res, next) {
  * @swagger
  * /api/v1/transactions:
  *   post:
- *     summary: create transaction
+ *     summary: create new transaction and update amount in holdings
  *     tags: [transactions]
  *     parameters:
  *          - in: path
- *            name: id
+ *            name: user ID
  *            required: true
  *            schema:
  *              type: integer
@@ -100,19 +114,14 @@ router.get("/:id", authenticateUser, async function (req, res, next) {
  *             $ref: '#/components/schemas/Transaction'
  *           example:
  *             AssetID: 1
- *             Amount: 100
- *             Price: 14.2
- *             Type: 1
- *             Date: "example date"
- *     responses:
- *       201:
- *         $ref: '#/components/responses/Success'
- *       422:
- *         $ref: '#/components/responses/ValidationError'
+ *             Amount: 2000
+ *             Price: 15
+ *             Type: true
+ *             Date: 2024-11-27
  */
-router.post("/:id", authenticateUser, async function (req, res, next) {
+router.post("/:userId", authenticateUser, async function (req, res, next) {
   try {
-    const UserID = parseInt(req.params.id);
+    const UserID = parseInt(req.params.userId);
     const { AssetID, Amount, Price, Type, Date } = req.body;
 
     await database.query(
@@ -137,8 +146,7 @@ router.post("/:id", authenticateUser, async function (req, res, next) {
         INSERT INTO Holdings (UserID, AssetID, Amount)
         VALUES (:UserID, :AssetID, :Amount)
         ON CONFLICT(UserID, AssetID) DO 
-            UPDATE 
-                SET Amount = ROUND(Amount + EXCLUDED.Amount, 8)
+            UPDATE SET Amount = Amount + EXCLUDED.Amount
       `,
       {
         replacements: {
@@ -150,10 +158,40 @@ router.post("/:id", authenticateUser, async function (req, res, next) {
     );
 
     const [lastTransaction] = await database.query(
-      `SELECT last_insert_rowid() as id`,
+      `
+          SELECT MAX(TransactionID) as id
+          FROM Transactions
+          WHERE UserID = :UserID
+            AND AssetID = :AssetID
+            AND Amount = :Amount
+            AND Price = :Price
+            AND Type = :Type
+            AND Date = :Date
+      `,
+      {
+        replacements: {
+          UserID,
+          AssetID,
+          Amount,
+          Price,
+          Type,
+          Date,
+        },
+      },
     );
+
     const [transaction] = await database.query(
-      `SELECT * FROM Transactions WHERE TransactionID = ${lastTransaction[0].id}`,
+      `
+          SELECT T.TransactionID, T.Type, T.Amount, T.Price, T.Date, A.Name, A.Symbol, A.ImagePath
+          FROM Transactions T
+                   INNER JOIN Assets A ON A.AssetID = T.AssetID
+          WHERE T.TransactionID = :TransactionID
+      `,
+      {
+        replacements: {
+          TransactionID: lastTransaction[0].id,
+        },
+      },
     );
 
     res.status(201).json(transaction[0]);
@@ -164,77 +202,133 @@ router.post("/:id", authenticateUser, async function (req, res, next) {
 });
 
 /**
- * Gets a balance change report for a certain user over a time period
+ * Update a transaction
  *
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
  *
  * @swagger
- * /api/v1/transactions/{id}/balance-change:
- *   get:
- *     summary: balance change report for a user
- *     description: Gets the balance changes for a certain user id over a date range
+ * /api/v1/transactions/{userId}/{transactionId}:
+ *   put:
+ *     summary: update an existing transaction and update amount in holdings
  *     tags: [transactions]
  *     parameters:
  *          - in: path
- *            name: id
+ *            name: userId
  *            required: true
  *            schema:
  *              type: integer
  *            description: user ID
- *          - in: query
- *            name: start
+ *          - in: path
+ *            name: transactionId
  *            required: true
  *            schema:
- *              type: string
- *              format: date
- *            description: start date
- *          - in: query
- *            name: end
- *            required: true
- *            schema:
- *              type: string
- *              format: date
- *            description: end date
- *     responses:
- *       200:
- *         description: balance change report for a user
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Transaction'
+ *              type: integer
+ *            description: transaction ID
+ *     requestBody:
+ *       description: transaction
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Transaction'
+ *           example:
+ *             Amount: 2000
+ *             Price: 15
+ *             Type: true
+ *             Date: 2024-11-27
  */
-router.get(
-  "/:id/balance-change",
+router.put(
+  "/:userId/:transactionId",
   authenticateUser,
   async function (req, res, next) {
     try {
-      const id = parseInt(req.params.id);
-      const { start, end } = req.query;
+      const UserID = parseInt(req.params.userId);
+      const TransactionID = parseInt(req.params.transactionId);
+      const { Amount, Price, Type, Date } = req.body;
 
-      const [balances] = await database.query(
+      const [oldTransaction] = await database.query(
         `
-        SELECT MIN(T.Date) AS FirstTransactionDate, MAX(T.Date) AS LastTransactionDate, A.Name, A.Symbol,
-            ROUND(SUM(CASE WHEN T.Type THEN T.Amount ELSE -T.Amount END), 5) AS BalanceChange
-        FROM Transactions T
-            INNER JOIN Assets A ON A.AssetID = T.AssetID
-        WHERE UserID = :UserID
-            AND T.Date BETWEEN :StartDate AND :EndDate
-        GROUP BY A.Name, A.Symbol
-        ORDER BY FirstTransactionDate ASC
+          SELECT * FROM Transactions WHERE TransactionID = :TransactionID
       `,
         {
           replacements: {
-            UserID: id,
-            StartDate: start,
-            EndDate: end,
+            TransactionID: TransactionID,
           },
         },
       );
-      res.json(balances);
+
+      await database.query(
+        `
+        UPDATE Transactions
+        SET Amount = :Amount,
+            Price = :Price,
+            Type = :Type,
+            Date = :Date
+        WHERE TransactionID = :TransactionID AND UserID = :UserID
+      `,
+        {
+          replacements: {
+            TransactionID: TransactionID,
+            UserID: UserID,
+            Amount: Amount,
+            Price: Price,
+            Type: Type,
+            Date: Date,
+          },
+        },
+      );
+
+      await database.query(
+        `
+        INSERT INTO Holdings (UserID, AssetID, Amount)
+        VALUES (:UserID, :AssetID, :Amount)
+        ON CONFLICT(UserID, AssetID) DO 
+            UPDATE SET Amount = Amount + EXCLUDED.Amount
+      `,
+        {
+          replacements: {
+            UserID: UserID,
+            AssetID: oldTransaction[0].AssetID,
+            Amount: oldTransaction[0].Type
+              ? -oldTransaction[0].Amount
+              : oldTransaction[0].Amount,
+          },
+        },
+      );
+
+      await database.query(
+        `
+        INSERT INTO Holdings (UserID, AssetID, Amount)
+        VALUES (:UserID, :AssetID, :Amount)
+        ON CONFLICT(UserID, AssetID) DO 
+            UPDATE SET Amount = Amount + EXCLUDED.Amount
+      `,
+        {
+          replacements: {
+            UserID: UserID,
+            AssetID: oldTransaction[0].AssetID,
+            Amount: Type ? Amount : -Amount,
+          },
+        },
+      );
+
+      const [updatedTransaction] = await database.query(
+        `
+          SELECT T.TransactionID, T.Type, T.Amount, T.Price, T.Date, A.Name, A.Symbol, A.ImagePath
+          FROM Transactions T
+                   INNER JOIN Assets A ON A.AssetID = T.AssetID
+          WHERE T.TransactionID = :LastTransactionID
+      `,
+        {
+          replacements: {
+            LastTransactionID: TransactionID,
+          },
+        },
+      );
+
+      res.status(201).json(updatedTransaction[0]);
     } catch (error) {
       logger.error(error);
       res.status(500).end();
@@ -243,77 +337,80 @@ router.get(
 );
 
 /**
- * Gets a realized profits report for a certain user over a time period
+ * Delete a transaction
  *
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
  *
  * @swagger
- * /api/v1/transactions/{id}/realized-profit:
- *   get:
- *     summary: realized profit report for a user
- *     description: Gets the realized profits for a certain user id over a date range
+ * /api/v1/transactions/{userId}/{transactionId}:
+ *   delete:
+ *     summary: delete an existing transaction and update amount in holdings
  *     tags: [transactions]
  *     parameters:
  *          - in: path
- *            name: id
+ *            name: userId
  *            required: true
  *            schema:
  *              type: integer
  *            description: user ID
- *          - in: query
- *            name: start
+ *          - in: path
+ *            name: transactionId
  *            required: true
  *            schema:
- *              type: string
- *              format: date
- *            description: start date
- *          - in: query
- *            name: end
- *            required: true
- *            schema:
- *              type: string
- *              format: date
- *            description: end date
- *     responses:
- *       200:
- *         description: realized profit report for a user
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Transaction'
+ *              type: integer
+ *            description: transaction ID
  */
-router.get(
-  "/:id/realized-profit",
+router.delete(
+  "/:userId/:transactionId",
   authenticateUser,
   async function (req, res, next) {
     try {
-      const id = parseInt(req.params.id);
-      const { start, end } = req.query;
+      const UserID = parseInt(req.params.userId);
+      const TransactionID = parseInt(req.params.transactionId);
 
-      const [profits] = await database.query(
+      const [oldTransaction] = await database.query(
         `
-        SELECT MIN(T.Date) AS FirstTransactionDate, MAX(T.Date) AS LastTransactionDate, A.Name, A.Symbol,
-            ROUND(SUM(CASE WHEN T.Type THEN -T.Amount * T.Price ELSE T.Amount * T.Price END), 2) AS RealizedProfit
-        FROM Transactions T
-            INNER JOIN Assets A ON A.AssetID = T.AssetID
-        WHERE UserID = :UserID
-            AND T.Date BETWEEN :StartDate AND :EndDate
-        GROUP BY A.Name, A.Symbol
-        ORDER BY RealizedProfit DESC
+          SELECT * FROM Transactions WHERE TransactionID = :TransactionID
       `,
         {
           replacements: {
-            UserID: id,
-            StartDate: start,
-            EndDate: end,
+            TransactionID: TransactionID,
           },
         },
       );
-      res.json(profits);
+
+      await database.query(
+        `
+        INSERT INTO Holdings (UserID, AssetID, Amount)
+        VALUES (:UserID, :AssetID, :Amount)
+        ON CONFLICT(UserID, AssetID) DO 
+            UPDATE SET Amount = Amount + EXCLUDED.Amount
+      `,
+        {
+          replacements: {
+            UserID: UserID,
+            AssetID: oldTransaction[0].AssetID,
+            Amount: oldTransaction[0].Type
+              ? -oldTransaction[0].Amount
+              : oldTransaction[0].Amount,
+          },
+        },
+      );
+
+      await database.query(
+        `
+        DELETE FROM Transactions WHERE TransactionID = :TransactionID
+      `,
+        {
+          replacements: {
+            TransactionID,
+          },
+        },
+      );
+
+      res.status(200).end();
     } catch (error) {
       logger.error(error);
       res.status(500).end();

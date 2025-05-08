@@ -46,7 +46,11 @@ import logger from "../../../configs/logger.js";
  */
 router.get("/", async function (req, res, next) {
   try {
-    const assets = await database.query("SELECT * FROM Assets");
+    const assets = await database.query(
+      `
+        SELECT * FROM Assets
+      `,
+    );
     res.json(assets[0]);
   } catch (error) {
     logger.error(error);
@@ -69,7 +73,7 @@ router.get("/", async function (req, res, next) {
  *     tags: [assets]
  *     parameters:
  *          - in: path
- *            name: id
+ *            name: asset ID
  *            required: true
  *            schema:
  *              type: integer
@@ -89,8 +93,13 @@ router.get("/:id", async function (req, res, next) {
     const asset = await database.query(
       `
         SELECT * FROM Assets
-        WHERE AssetID=${req.params.id}
+        WHERE AssetID = :AssetID
       `,
+      {
+        replacements: {
+          AssetID: req.params.id,
+        },
+      },
     );
     res.json(asset[0][0]);
   } catch (error) {
@@ -109,7 +118,7 @@ router.get("/:id", async function (req, res, next) {
  * @swagger
  * /api/v1/assets:
  *   post:
- *     summary: create asset
+ *     summary: create and return a new asset
  *     tags: [assets]
  *     requestBody:
  *       description: asset
@@ -119,26 +128,26 @@ router.get("/:id", async function (req, res, next) {
  *           schema:
  *             $ref: '#/components/schemas/Asset'
  *           example:
- *             ChainID: Ethereum
- *             ContractAddress: 0x12fdfe...
- *             Name: USDC
- *             Symbol: USDC
- *     responses:
- *       201:
- *         $ref: '#/components/responses/Success'
- *       422:
- *         $ref: '#/components/responses/ValidationError'
+ *             ChainID: hyperliquid
+ *             ContractAddress: "0x0d01dc56dcaaca66ad901c959b4011ec"
+ *             Name: HYPE
+ *             Symbol: HYPE
+ *             ImagePath: https://dd.dexscreener.com/ds-data/tokens/hyperliquid/0x0d01dc56dcaaca66ad901c959b4011ec.png?key=ac1a77
  */
 router.post("/", async function (req, res, next) {
   try {
-    const { ChainID, ContractAddress, Name, Symbol } = req.body;
+    const { ChainID, ContractAddress, Name, Symbol, ImagePath } = req.body;
 
     await database.query(
       `
-        INSERT INTO Assets(ChainID, ContractAddress, Name, Symbol) 
-        SELECT :ChainID, :ContractAddress, :Name, :Symbol
-        WHERE NOT EXISTS (
-            SELECT 1 FROM Assets WHERE ChainID = :ChainID AND ContractAddress= :ContractAddress
+        INSERT INTO Assets(ChainID, ContractAddress, Name, Symbol, ImagePath) 
+        SELECT :ChainID, :ContractAddress, :Name, :Symbol, :ImagePath
+        WHERE NOT EXISTS 
+        (
+            SELECT 1 
+            FROM Assets 
+            WHERE ChainID = :ChainID 
+                AND ContractAddress = :ContractAddress
         )
       `,
       {
@@ -147,6 +156,7 @@ router.post("/", async function (req, res, next) {
           ContractAddress: ContractAddress,
           Name: Name,
           Symbol: Symbol,
+          ImagePath: ImagePath,
         },
       },
     );
@@ -154,7 +164,8 @@ router.post("/", async function (req, res, next) {
     const asset = await database.query(
       `
         SELECT * FROM Assets
-        WHERE ChainID = :ChainID AND ContractAddress = :ContractAddress
+        WHERE ChainID = :ChainID 
+          AND ContractAddress = :ContractAddress
       `,
       {
         replacements: {
