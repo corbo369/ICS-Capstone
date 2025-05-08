@@ -1,0 +1,9 @@
+node_modules
+coverage
+.env
+.env.example
+.env.test
+.prettierrc
+database.sqlite
+eslint.config.js
+public

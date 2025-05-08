@@ -17,6 +17,9 @@ export default defineConfig([
     },
   },
   {
+    ignores: ["public/*"],
+  },
+  {
     files: ["**/*.{js,mjs,cjs}"],
     plugins: { js },
     extends: ["js/recommended"],
