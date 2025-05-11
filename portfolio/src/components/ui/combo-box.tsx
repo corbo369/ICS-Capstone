@@ -57,7 +57,11 @@ const ComboBox: React.FC<ComboBoxProps> = ({ options, value, onChange, type }) =
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="z-[9999] w-full p-0">
+      <PopoverContent
+        align="center"
+        sideOffset={4}
+        className="z-[9999] w-[--radix-popper-anchor-width] min-w-[12rem] p-0"
+      >
         <Command>
           <CommandInput placeholder={placeholderHelper()} className="h-9" />
           <CommandList>
