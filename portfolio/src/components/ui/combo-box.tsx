@@ -41,6 +41,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({ options, value, onChange, type }) =
     if (type === "reports") return "Search Reports";
   }
 
+  console.log(options.length, options);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -56,7 +57,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({ options, value, onChange, type }) =
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 dark">
+      <PopoverContent className="z-9 w-full p-0 dark">
         <Command>
           <CommandInput placeholder={placeholderHelper()} className="h-9" />
           <CommandList>
