@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
         const signature = await signMessageAsync({ message });
 
         // Pass address, message, and signature to auth route
-        const res = await fetch("/auth/login", {
+        const res = await fetch("/api/auth/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
