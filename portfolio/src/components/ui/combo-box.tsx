@@ -49,7 +49,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({ options, value, onChange, type }) =
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="h-15 w-full justify-between"
+          className="h-full w-full justify-between"
         >
           {value
             ? options.find((o) => o.value === value)?.label
@@ -57,13 +57,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({ options, value, onChange, type }) =
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        side="bottom"
-        align="start"
-        sideOffset={4}
-        avoidCollisions={false}
-        className="z-[9999] w-full p-0"
-      >
+      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className="w-full p-0 dark">
         <Command>
           <CommandInput placeholder={placeholderHelper()} className="h-9" />
           <CommandList>
