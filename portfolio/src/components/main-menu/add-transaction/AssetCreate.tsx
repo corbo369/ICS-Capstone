@@ -27,6 +27,7 @@ const AssetCreate: React.FC<AssetCreateProps> = ({ chainId, setChainId, contract
     {value: "solana", label: "Solana"},
     {value: "base", label: "Base"},
     {value: "hyperliquid", label: "Hyperliquid"},
+    {value: "hyperevm", label: "HyperEVM"},
     {value: "sui", label: "Sui"},
     {value: "pulsechain", label: "Pulsechain"},
   ]
