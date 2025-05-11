@@ -1,1 +1,2 @@
 /api/*   https://ics-capstone.onrender.com/api/:splat   200
+/auth/*  https://ics-capstone.onrender.com/auth/:splat  200
