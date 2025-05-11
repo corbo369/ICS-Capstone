@@ -79,7 +79,6 @@ router.get("/:userId", authenticateUser, async function (req, res, next) {
         },
       },
     );
-    console.log(transactions);
     res.json(transactions);
   } catch (error) {
     logger.error(error);
