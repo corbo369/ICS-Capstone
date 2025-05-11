@@ -23,6 +23,10 @@ const users = [
     UserID: 4,
     UserAddress: "0xBB041Bd376f6F603a8a41cc19d5ae7579269b589",
   },
+  {
+    UserID: 5,
+    UserAddress: "0x2588CC21D3076c2D4AeF5a274FB5Ef2b2C688B70",
+  }
 ];
 
 /**

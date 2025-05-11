@@ -31,6 +31,24 @@ const holdings = [
     AssetID: 4,
     Amount: 5000,
   },
+  {
+    HoldingID: 5,
+    UserID: 5,
+    AssetID: 1,
+    Amount: 0.311,
+  },
+  {
+    HoldingID: 6,
+    UserID: 5,
+    AssetID: 5,
+    Amount: 1600.53,
+  },
+  {
+    HoldingID: 7,
+    UserID: 5,
+    AssetID: 6,
+    Amount: 7496,
+  },
 ];
 
 /**

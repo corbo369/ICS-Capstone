@@ -44,6 +44,22 @@ const assets = [
     ImagePath:
       "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
   },
+  {
+    AssetID: 5,
+    ChainID: "hyperliquid",
+    ContractAddress: "0x0d01dc56dcaaca66ad901c959b4011ec",
+    Name: "HYPE",
+    Symbol: "HYPE",
+    ImagePath: 'https://dd.dexscreener.com/ds-data/tokens/hyperliquid/0x0d01dc56dcaaca66ad901c959b4011ec.png?key=ac1a77',
+  },
+  {
+    AssetID: 6,
+    ChainID: "solana",
+    ContractAddress: "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    Name: "Fartcoin",
+    Symbol: "Fartcoin",
+    ImagePath: 'https://dd.dexscreener.com/ds-data/tokens/solana/9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump.png?key=6a4a45',
+  },
 ];
 
 /**
