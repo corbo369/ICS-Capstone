@@ -43,8 +43,8 @@ const ComboBox: React.FC<ComboBoxProps> = ({ options, value, onChange, type }) =
 
   console.log(options.length, options);
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
+      <PopoverTrigger className="h-full w-full">
         <Button
           variant="outline"
           role="combobox"
@@ -57,7 +57,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({ options, value, onChange, type }) =
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className="w-full p-0 dark">
+      <PopoverContent className="w-full p-0 dark">
         <Command>
           <CommandInput placeholder={placeholderHelper()} className="h-9" />
           <CommandList>
